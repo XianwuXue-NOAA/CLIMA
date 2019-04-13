@@ -85,7 +85,7 @@ function main(mpicomm, DFloat, topl, N, timeend, ArrayType, dt)
       r = hypot(x, y, z)
       λ = atan(y, x)
       ϕ = asin(z / r)
-      Q[1] = DFloat(π/6 < λ < π/3 && -π/6 < ϕ < π/6)
+      Q[1] = exp(-((3λ)^2 + (3ϕ)^2))
     end
   end
   DGBalanceLawDiscretizations.writevtk("ic", Q, spacedisc, ("ρ",))
