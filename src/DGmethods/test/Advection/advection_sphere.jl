@@ -39,15 +39,13 @@ numericalflux!(F, nM, QM, auxM, QP, auxP, t) =
 @inline function velocity_init!(vel, x, y, z)
   @inbounds begin
     DFloat = eltype(vel)
-    r = hypot(x, y, z)
-    λ = atan(y, x)
-    ϕ = asin(z / r)
+    r, λ = hypot(x, y), atan(y, x) # x-y polar coordinates
 
-    uλ::DFloat, uϕ::DFloat = 2 * DFloat(π), 0
+    uλ = 2 * DFloat(π)
 
-    vel[uid] = -r * uλ * sin(λ) - r * uϕ * cos(λ) * sin(ϕ)
-    vel[vid] =  r * uλ * cos(λ) - r * uϕ * sin(λ) * cos(ϕ)
-    vel[wid] =  r * uϕ * cos(ϕ)
+    vel[uid] = -r * uλ * sin(λ)
+    vel[vid] =  r * uλ * cos(λ)
+    vel[wid] =  0
   end
 end
 
