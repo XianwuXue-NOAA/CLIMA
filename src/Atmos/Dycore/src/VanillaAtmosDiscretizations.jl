@@ -51,6 +51,9 @@ struct VanillaAtmosDiscretization{T, dim, polynomialorder, numberofDOFs,
   "storage for the grad"
   grad::DASAT3
 
+  "sponge"
+  sponge::Function
+
   VanillaAtmosDiscretization(grid;
                              # How many tracer variables
                              ntrace=0,
@@ -64,7 +67,8 @@ struct VanillaAtmosDiscretization{T, dim, polynomialorder, numberofDOFs,
                                        # Use gravity?
                                        gravity = true,
                                        # viscosity constant
-                                       viscosity = 0
+                                       viscosity = 0,
+                                       sponge = (x...) -> 0
                                       ) where {T, dim, N, Np, DA,
                                                nmoist, ntrace}
     topology = grid.topology
@@ -87,7 +91,7 @@ struct VanillaAtmosDiscretization{T, dim, polynomialorder, numberofDOFs,
 
     new{T, dim, N, Np, DA, nmoist, ntrace, DASAT3, GT}(grid,
                                                        gravity ? grav : 0,
-                                                       viscosity, grad)
+                                                       viscosity, grad, sponge)
   end
 end
 
@@ -335,7 +339,7 @@ function rhs!(dQ::MPIStateArray{S, T}, Q::MPIStateArray{S, T}, t::T,
   MPIStateArrays.start_ghost_exchange!(grad)
 
   volumerhs!(Val(dim), Val(N), Val(nmoist), Val(ntrace), dQ.Q, Q.Q, grad.Q,
-             vgeo, gravity, viscosity, Dmat, topology.realelems)
+             vgeo, gravity, viscosity, Dmat, topology.realelems, disc.sponge)
 
   MPIStateArrays.finish_ghost_exchange!(grad)
 

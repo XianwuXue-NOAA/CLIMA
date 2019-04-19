@@ -81,11 +81,15 @@ function main(mpicomm, DFloat, ArrayType, brickrange, nmoist, ntrace, N,
                                          )
 
   # spacedisc = data needed for evaluating the right-hand side function
+  function sponge(x, y, z)
+    0
+  end
   spacedisc = VanillaAtmosDiscretization(grid,
                                         gravity=gravity,
                                         viscosity=viscosity,
                                         ntrace=ntrace,
-                                        nmoist=nmoist)
+                                        nmoist=nmoist,
+                                        sponge=sponge)
 
   # This is a actual state/function that lives on the grid
   initialcondition(x...) = rising_thermal_bubble(x...;

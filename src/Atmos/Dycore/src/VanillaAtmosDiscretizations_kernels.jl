@@ -447,7 +447,7 @@ end
 # {{{ Volume RHS for 2-D
 function volumerhs!(::Val{2}, ::Val{N}, ::Val{nmoist}, ::Val{ntrace},
                     rhs::Array, Q, grad, vgeo, gravity, viscosity, D,
-                    elems) where {N, nmoist, ntrace}
+                    elems, sponge) where {N, nmoist, ntrace}
   DFloat = eltype(Q)
 
   nvar = _nstate + nmoist + ntrace
@@ -538,6 +538,9 @@ function volumerhs!(::Val{2}, ::Val{N}, ::Val{nmoist}, ::Val{ntrace},
 
       # buoyancy term
       rhs[i, j, _V, e] -= ρ * gravity
+
+      α = sponge(x,y,z)
+      # do work with sponge
 
       # Store velocity
       l_u[i, j], l_v[i, j] = u, v
@@ -630,7 +633,7 @@ end
 # {{{ Volume RHS for 3-D
 function volumerhs!(::Val{3}, ::Val{N}, ::Val{nmoist}, ::Val{ntrace},
                     rhs::Array, Q, grad, vgeo, gravity, viscosity, D,
-                    elems) where {N, nmoist, ntrace}
+                    elems, sponge) where {N, nmoist, ntrace}
   DFloat = eltype(Q)
 
   nvar = _nstate + nmoist + ntrace
@@ -751,6 +754,9 @@ function volumerhs!(::Val{3}, ::Val{N}, ::Val{nmoist}, ::Val{ntrace},
 
       # buoyancy term
       rhs[i, j, k, _W, e] -= ρ * gravity
+
+      α = sponge(x,y,z)
+      # do work with sponge
 
       # Store velocity
       l_u[i, j, k], l_v[i, j, k], l_w[i, j, k] = u, v, w
